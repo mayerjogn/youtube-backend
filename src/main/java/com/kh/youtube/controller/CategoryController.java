@@ -11,13 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/*")
+@CrossOrigin(origins = {"*"}, maxAge = 6000) // 백과 프론트의 다른 포트번호를 연결해주는것
 public class CategoryController {
 
     @Autowired
     private CategoryService service;
 
     @GetMapping("/category")
-    public ResponseEntity<List<Category>> shwoAll() {
+    public ResponseEntity<List<Category>> showAll() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(service.showAll());
         } catch (Exception e) {
