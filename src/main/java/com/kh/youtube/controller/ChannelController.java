@@ -77,7 +77,7 @@ public class ChannelController {
             throw new RuntimeException(e);
         }
         Channel vo = new Channel();
-        vo.setChannelPhoto(savePhoto);
+        vo.setChannelPhoto(uuid+ "_" +realPhoto);
         vo.setChannelName(name);
         vo.setChannelDesc(desc);
 

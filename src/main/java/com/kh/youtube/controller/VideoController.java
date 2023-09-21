@@ -8,6 +8,10 @@ import com.kh.youtube.service.VideoService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,14 +45,43 @@ public class VideoController {
 
     // 영상 전체 조회 GET http://localhost:8080/api/video
     @GetMapping("/video")
-    public ResponseEntity <List<Video>> showAllVideo(){
-        return ResponseEntity.status(HttpStatus.OK).body(videoService.showAll());
+    public ResponseEntity <List<Video>> showAllVideo(@RequestParam(name = "page", defaultValue = "1") int page){ 
+        // @RequestParam은 원랜 명시 안해도되지많 저런 경우엔 명시해야함
+
+        // 페이지 넘버는 계속 바뀌어야하니 parameter로 받아옴 defaultValue "1"로 첫번째 페이지 고정해야 page-1이 처리가됨
+
+        // 디폴트값으로 지정해두면  http://localhost:8080/api/video?page=(몇번째 페이지) 이런식으로 안쓰고
+
+        // http://localhost:8080/api/video 이렇게 바로 첫 페이지가 나옴
+
+
+        // 정렬 기능
+        // by = 무엇을 기준 으로 할건지 ex) code id 등
+        Sort sort = Sort.by("videoCode").descending();
+
+
+        // 한 페이지의 10개 첫번 째는 페이지는 0부터 시작 두번 째는 한 페이지에 몇개가 들어올 건지
+        Pageable pageable = PageRequest.of(page-1, 10, sort); // 두번째 페이지는 1부터
+
+        //http://localhost:8080/api/video?page=  : 페이징 처리후 포스트맨에서 확인할때
+
+        Page<Video> result = videoService.showAll(pageable); // Service 가서도 Pageable을 넣어야함
+        
+        log.info("Total Pages : " + result.getTotalPages()); // 총 몇 페이지인지
+        log.info("Total Count : " + result.getTotalElements()); // 전체 몇개인지
+        log.info("Page Number : " + result.getNumber()); // 현재 페이지 번호
+        log.info("Page Size : " + result.getSize()); // 페이지 당 데이터 개수
+        log.info("Next Page : " + result.hasNext()); // 다음 페이지가 있는지 존재 여부 확인
+        log.info("First Page : "+result.isFirst()); // 시작 페이지 여부
+        
+        return ResponseEntity.status(HttpStatus.OK).body(result.getContent()); // Page<Video>이기 때문에 List인 getContent로 리턴 해야함
+   //     return ResponseEntity.status(HttpStatus.OK).build();
     }
     
     // 영상 추가 POST http://localhost:8080/api/video
     @PostMapping ("/video")
-    public ResponseEntity<Video> createVideo(MultipartFile video, MultipartFile image, String title, String desc,String categoryCode){
-
+    public ResponseEntity<Video> createVideo(MultipartFile video, MultipartFile image, @RequestParam(name="desc", required = false) String title, String desc,String categoryCode){
+                                                    // 필수 값이 아닌건 @RequestParam 걸어둘 수 있음 여러 개는 각각 에다 지정 가능
         log.info("video : " + video);
         log.info("image : " + image);
         log.info("title : " + title);
@@ -92,15 +125,15 @@ public class VideoController {
 
         vo.setVideoTitle(title);
         vo.setVideoDesc(desc);
-        vo.setVideoUrl(saveVideo);
-        vo.setVideoPhoto(saveImage);
+        vo.setVideoUrl(uuid + "_" + realVideo);
+        vo.setVideoPhoto(uuid + "_" + realImage);
 
         Category category = new Category();
         category.setCategoryCode(Integer.parseInt(categoryCode));
         vo.setCategory(category);
 
         Channel channel = new Channel();
-        channel.setChannelCode(21);
+        channel.setChannelCode(43);
         vo.setChannel(channel);
 
         Member member = new Member();
