@@ -28,7 +28,7 @@ import java.util.UUID;
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class ChannelController {
 
-    @Value("${spring.servlet.multipart.location}")
+    @Value("${youtube.upload.path}")
     private String uploadPath;
     @Autowired
     private ChannelService channel;

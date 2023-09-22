@@ -3,6 +3,7 @@ package com.kh.youtube.service;
 
 import com.kh.youtube.domain.Video;
 import com.kh.youtube.repo.VideoDAO;
+import com.querydsl.core.BooleanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +17,10 @@ public class VideoService {
     @Autowired
     private VideoDAO dao;
 
-    public Page<Video> showAll(Pageable pageable){
+    public Page<Video> showAll(Pageable pageable, BooleanBuilder builder){
         // dao.findAll() -> List<Video>를 불러옴
         // dao.finAll(pageble)을 넣으면 page<Video>를 리턴해줌
-        return dao.findAll(pageable);
+        return dao.findAll(builder,pageable); // 순서가 있음 builder가 먼저와야함
     }
 
     public Video show(int id){
