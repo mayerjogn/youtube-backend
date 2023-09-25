@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @NoArgsConstructor
 @DynamicInsert // 디폴트값이 있는경우  추가할 때 default값이 자동으로 들어가는 이노테이션
 //@DynamicUpdate // authority 시큐리티 때문에 위 insert와 함께씀
+@Builder
 public class Member {
 
     @Id // primary키에는 @Id
